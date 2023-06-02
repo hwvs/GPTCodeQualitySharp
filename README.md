@@ -1,5 +1,7 @@
 # GPTCodeQualitySharp (*-alpha_test_version*)
 
+[![.NET](https://github.com/hwvs/GPTCodeQualitySharp/actions/workflows/dotnet.yml/badge.svg)](https://github.com/hwvs/GPTCodeQualitySharp/actions/workflows/dotnet.yml)
+
 __GPTCodeQualitySharp__ is a __*language-agnostic code quality assessment tool*__ that utilizes OpenAI GPT (**default=`GPT-3.5-Turbo`**, *TODO: GPT4*) or compatible text-completion models to analyze and score source code based on multiple conventions, via a large prompt.
 
 This project aims to help developers pin-point areas with poor code quality and improve their projects.
