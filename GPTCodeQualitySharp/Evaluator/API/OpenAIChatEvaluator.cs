@@ -1,0 +1,141 @@
+﻿using GPTCodeQualitySharp.Dataset;
+using GPTCodeQualitySharp.Document.Partial;
+using GPTCodeQualitySharp.Evaluator.API.Impl;
+using OpenAI_API;
+using OpenAI_API.Chat;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GPTCodeQualitySharp.Evaluator.API
+{
+    public class OpenAIChatEvaluator : ICodeChunkEvaluatorAsync
+    {
+        // Prompt template property
+        string PromptTemplate { get; }
+        public string ApiKey { get; set; }
+        private readonly decimal _temperature;
+        private readonly IValueStore _valueStore;
+
+        public OpenAIChatEvaluator(string promptTemplate, IValueStore valueStore, string ApiKey, decimal temperature = 0)
+        {
+            PromptTemplate = promptTemplate;
+            _temperature = temperature;
+            _valueStore = valueStore;
+
+            if (!PromptTemplate.Contains("{CODE}"))
+            {
+                throw new ArgumentException("Prompt template must contain {CODE} placeholder");
+            }
+
+            if (ApiKey != null && ApiKey.Length > 1)
+            {
+                this.ApiKey = ApiKey;
+            }
+            else
+            {
+
+                throw new ArgumentException("No API key provided - please provide an API key or set the OPENAI_API_KEY environment variable");
+
+            }
+        }
+
+        private string PreparePrompt(CodeChunk codeChunk)
+        {
+            return PromptTemplate.Replace("{CODE}", codeChunk.Code);
+        }
+
+        public async Task<EvaluatorResult> EvaluateAsync(CodeChunk codeChunk)
+        {
+            // TODO: Make this robust
+            string prompt = PreparePrompt(codeChunk);
+
+            // Split prompt by {ROLE} and anything before it is a system message
+            // {ROLE} this is user text {ROLE} this is assistant text {ROLE} this is user text etc.
+
+
+            string[] promptSplit = prompt.Split("{ROLE}");
+            var cacheKey = new HashableDataset(promptSplit);
+
+            // Cache hit
+            // TODO: If temperature == 0 only
+            if(_valueStore.TryGetValue(ValueStoreTable.ApiResult, cacheKey, out string cacheResult))
+            {
+                return new EvaluatorResult(true, cacheResult);
+            }
+
+            if (promptSplit.Length == 0)
+            {
+                throw new ArgumentException("Prompt template must contain {ROLE} placeholder");
+            }
+
+
+            if (promptSplit.Length == 0)
+            {
+                throw new ArgumentException("No chat messages found in prompt");
+            }
+
+            // Create the chat
+            /*var chat = api.Chat.CreateConversation();
+
+            /// give instruction as System
+            chat.AppendSystemMessage("You are a teacher who helps children understand if things are animals or not.  If the user tells you an animal, you say \"yes\".  If the user tells you something that is not an animal, you say \"no\".  You only ever respond with \"yes\" or \"no\".  You do not say anything else.");
+
+            // give a few examples as user and assistant
+            chat.AppendUserInput("Is this an animal? Cat");
+            chat.AppendExampleChatbotOutput("Yes");
+            chat.AppendUserInput("Is this an animal? House");
+            chat.AppendExampleChatbotOutput("No");*/
+
+
+            OpenAIAPI api = new OpenAIAPI(new APIAuthentication(ApiKey));
+
+            var chat = api.Chat.CreateConversation();
+
+            // Add the chat messages to the chat
+
+            chat.AppendSystemMessage(promptSplit[0]);
+
+            if (promptSplit.Length >= 1)
+            {
+                // Otherwise we have a system message and a list of user and assistant messages
+                for (int i = 1; i < promptSplit.Length; i++)
+                {
+                    if (i % 2 == 1)
+                    {
+                        // User message
+                        chat.AppendUserInput(promptSplit[i]);
+                    }
+                    else
+                    {
+                        // Assistant message
+                        chat.AppendExampleChatbotOutput(promptSplit[i]);
+                    }
+                }
+            }
+
+
+            chat.RequestParameters.Temperature = (double)_temperature;
+
+            // Get the response
+
+            var response = await chat.GetResponseFromChatbotAsync();
+
+            if(response != null)
+            {
+                // Cache the response
+                _valueStore.StoreValue(ValueStoreTable.OpenAIResponses, cacheKey, response);
+            }
+
+            var evaluator = new OpenAIResultEvaluator(codeChunk, prompt, response);
+
+            EvaluatorResult result;
+            evaluator.TryGetJSONString(out result);
+
+            return result;
+
+        }
+    }
+}
