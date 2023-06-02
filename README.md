@@ -3,7 +3,7 @@
 GPTCodeQualitySharp is a language-agnostic code quality assessment tool that utilizes OpenAI (**GPT-3.5-Rurbo**, *TODO: GPT4*) or compatible text-completion models to analyze and score source code based on multiple conventions. This project aims to help developers identify areas with poor code quality and improve their projects. It is a work-in-progress and will be refactored for better performance and usability.
 
 ## Credits
-### Author: Hunter Watson
+### Author: [Hunter Watson](https://github.com/hwvs)
 ### Original Repo: https://github.com/hwvs/GPTCodeQualitySharp
 ### License: Mozilla Public License 2.0
 ## Contributions / Improvements
