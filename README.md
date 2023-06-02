@@ -1,4 +1,4 @@
-# GPTCodeQualitySharp (*-alpha_test_version*)
+# GPTCodeQualitySharp (*-alpha_WiP_version*)
 
 [![.NET](https://github.com/hwvs/GPTCodeQualitySharp/actions/workflows/dotnet.yml/badge.svg)](https://github.com/hwvs/GPTCodeQualitySharp/actions/workflows/dotnet.yml)
 
