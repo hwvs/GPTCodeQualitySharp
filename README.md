@@ -1,12 +1,12 @@
 # GPTCodeQualitySharp (*-alpha_test_version*)
 
-__GPTCodeQualitySharp__ is a language-agnostic code quality assessment tool that utilizes OpenAI GPT (**default=`GPT-3.5-Turbo`**, *TODO: GPT4*) or compatible text-completion models to analyze and score source code based on multiple conventions, via a large prompt.
+__GPTCodeQualitySharp__ is a __*language-agnostic code quality assessment tool*__ that utilizes OpenAI GPT (**default=`GPT-3.5-Turbo`**, *TODO: GPT4*) or compatible text-completion models to analyze and score source code based on multiple conventions, via a large prompt.
 
 This project aims to help developers pin-point areas with poor code quality and improve their projects.
 
 Code is split into workable (truncated) chunks, and analyzed chunk-by-chunk - multiple pass-throughs using different chunk sizes (non-factors of each other) can allow the differential, or average, to be used to identify the precise areas, which avoids prompting for exact lines to flag.
 
-__It is a work-in-progress__ and will be refactored for better performance and usability. All Classes are subject to future changes.
+⚠️ __It is a work-in-progress__ and will be refactored for better performance and usability. All Classes are subject to future changes.
 
 *(This is only on GitHub to get it out to the public faster, it's not final)*
 
@@ -19,7 +19,7 @@ __It is a work-in-progress__ and will be refactored for better performance and u
 
 ---
 
-## Tested Languages (Target-Language Analyzed)
+## 💡 Tested Languages (Target-Language Analyzed)
 - C#/.NET (CSharp) **`High Accuracy`**
 - PHP **`High Accuracy`**
 - Ruby **`High Accuracy`**
