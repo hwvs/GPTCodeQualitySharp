@@ -4,7 +4,7 @@ __GPTCodeQualitySharp__ is a language-agnostic code quality assessment tool that
 
 This project aims to help developers pin-point areas with poor code quality and improve their projects.
 
-Code is split into workable (truncated) chunks, and analyzed chunk-by-chunk - multiple pass-throughs using different chunk sizes 
+Code is split into workable (truncated) chunks, and analyzed chunk-by-chunk - multiple pass-throughs using different chunk sizes (non-factors of each other) can allow the differential, or average, to be used to identify the precise areas, which avoids prompting for exact lines to flag.
 
 __It is a work-in-progress__ and will be refactored for better performance and usability. All Classes are subject to future changes.
 
