@@ -32,6 +32,9 @@ Code is split into workable (truncated) chunks, and analyzed chunk-by-chunk - mu
   
 *(Disclaimer: Accuracy is fairly subjective, and is compared to my own human opinion. Good code was tested from popular and well-engineered GitHub repositories. Bad code came from random searches for bad code, some of my own code, and by modifying some of the good code to add code-smells such as long chains of useless if-statements. )*
 
+## Screenshot of Demo App
+![Screenshot](https://i.imgur.com/NeIDKUI.png)
+
 ## Features
 
 - Analyzes source code files and scores them based on multiple conventions
