@@ -37,7 +37,7 @@ namespace GPTCodeQualitySharp.Dataset
 
         public void StoreValue(ValueStoreTable table, IHashableData key, string value);
 
-        public bool TryGetValue(ValueStoreTable table, IHashableData key, out string value);
+        public bool TryGetValue(ValueStoreTable table, IHashableData key, out string? value);
 
 
 

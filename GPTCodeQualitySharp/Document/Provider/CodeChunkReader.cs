@@ -13,7 +13,17 @@ namespace GPTCodeQualitySharp.Document.Provider
         public int SoftCodeChunkLengthLimit { get; set; } = 2048;
         public int HardCodeChunkLengthLimit { get; set; } = 2800;
 
-
+        /// <summary>
+        /// Backtracking will start the next chunk at BacktrackRatio from the end of the previous chunk, 
+        /// which means they will overlap by (BacktrackRatio * 100) percent
+        /// </summary>
+        public bool AllowBacktracking { get; set; } = true;
+        /// <summary>
+        /// ! Requires AllowBacktracking = true;
+        /// Backtracking will start the next chunk at BacktrackRatio from the end of the previous chunk,
+        /// which means they will overlap by (BacktrackRatio * 100) percent
+        /// </summary>
+        public double BacktrackRatio = 0.25d;
     }
 
     public class CodeChunkReader : IEnumerable<CodeChunkInfo>
@@ -49,8 +59,15 @@ namespace GPTCodeQualitySharp.Document.Provider
             int codeChunkStartLineNumber = 0;
             int codeChunkEndLineNumber = 0;
             StringBuilder codeChunkStringBuilder = new StringBuilder();
-            foreach (string line in lines)
+
+            List<int> backtrackedToLines = new List<int>(); // Keep track of lines that we backtracked to so we don't backtrack to them again
+            //foreach (string line in lines)
+            for(int i = 0; i < lines.Length; i++) // This allows us to backtrack
             {
+                Tuple<int, int>? lastChunkReturned = null;
+
+                string line = lines[i];
+
                 // If it's the first line, then we just add it to the StringBuilder
                 if (currentLineNumber == 0)
                 {
@@ -73,6 +90,7 @@ namespace GPTCodeQualitySharp.Document.Provider
                         CodeChunk codeChunk = new CodeChunk(codeChunkStringBuilder.ToString());
                         CodeChunkInfo codeChunkInfo = new CodeChunkInfo(codeChunk, _documentInfo, codeChunkStartLineNumber, codeChunkEndLineNumber);
                         yield return codeChunkInfo;
+                        lastChunkReturned = new Tuple<int, int>(codeChunkStartLineNumber, codeChunkEndLineNumber); // Flag for backtracking
                         // Reset the StringBuilder
                         codeChunkStringBuilder.Clear();
                         codeChunkStringBuilder.Append(line);
@@ -86,6 +104,7 @@ namespace GPTCodeQualitySharp.Document.Provider
                         CodeChunk codeChunk = new CodeChunk(codeChunkStringBuilder.ToString());
                         CodeChunkInfo codeChunkInfo = new CodeChunkInfo(codeChunk, _documentInfo, codeChunkStartLineNumber, codeChunkEndLineNumber);
                         yield return codeChunkInfo;
+                        lastChunkReturned = new Tuple<int, int>(codeChunkStartLineNumber, codeChunkEndLineNumber); // Flag for backtracking
                         // Reset the StringBuilder
                         codeChunkStringBuilder.Clear();
                         codeChunkStringBuilder.Append(line);
@@ -95,6 +114,38 @@ namespace GPTCodeQualitySharp.Document.Provider
                 }
                 // Increment the current line number
                 currentLineNumber++;
+
+                if(lastChunkReturned != null) // Returned a chunk this cycle, backtrack
+                {
+                    // if AllowBacktracking flag:
+                    // Move the start line to BacktrackRatio lines back
+                    // Eg: If backtrackRatio is 0.25 (25%) then we move back 25% of the lines
+                    //     so if we did 100-200, previously, then we will then do 175-??? for
+                    //     the next chunk
+                    // ----
+
+                    // If we are allowed to backtrack and we are not at the end of the file
+                    if(_settings.AllowBacktracking && (i + 1 < lines.Length))
+                    {
+                        // Calculate the number of lines to backtrack
+                        int backtrackLines = (int)((lastChunkReturned.Item2 - lastChunkReturned.Item1) * _settings.BacktrackRatio);
+                        // If we are backtracking at least 1 line
+                        if(backtrackLines > 0)
+                        {
+                            // Calculate the new start line
+                            int newStartLine = codeChunkEndLineNumber - backtrackLines;
+                            // If we have already backtracked to this line, then we need to move the start line up
+                            while(backtrackedToLines.Contains(newStartLine))
+                            {
+                                newStartLine++;
+                            }
+                            // Add the new start line to the list of backtracked lines
+                            backtrackedToLines.Add(newStartLine);
+                            // Update the start line
+                            codeChunkStartLineNumber = newStartLine;
+                        }
+                    }
+                }
             }
             // Yield return the last CodeChunk
             CodeChunk lastCodeChunk = new CodeChunk(codeChunkStringBuilder.ToString());

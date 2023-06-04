@@ -127,14 +127,18 @@ namespace GPTCodeQualitySharp.Evaluator.API
             {
                 // Cache the response
                 _valueStore.StoreValue(ValueStoreTable.OpenAIResponses, cacheKey, response);
+                var evaluator = new OpenAIResultEvaluator(codeChunk, prompt, response);
+
+                EvaluatorResult result;
+                evaluator.TryGetJSONString(out result);
+
+                return result;
+            }
+            else
+            {
+                throw new Exception("OpenAI API returned null response");
             }
 
-            var evaluator = new OpenAIResultEvaluator(codeChunk, prompt, response);
-
-            EvaluatorResult result;
-            evaluator.TryGetJSONString(out result);
-
-            return result;
 
         }
     }

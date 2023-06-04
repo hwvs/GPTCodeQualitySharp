@@ -82,7 +82,7 @@ namespace GPTCodeQualitySharp.Dataset
             }
         }
 
-        public bool TryGetValue(ValueStoreTable table, IHashableData key, out string value)
+        public bool TryGetValue(ValueStoreTable table, IHashableData key, out string? value)
         {
             using (var connection = new SQLiteConnection(_connectionString))
             {
