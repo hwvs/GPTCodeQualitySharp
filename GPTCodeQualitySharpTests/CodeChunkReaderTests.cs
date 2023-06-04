@@ -65,7 +65,7 @@ namespace GPTCodeQualitySharpTests
         
         }
 
-        private static string GetExampleDocument()
+        internal static string GetExampleDocument()
         {
             // Note: 10 <= Length <= 100000
             Assert.IsTrue(TEST_DOCUMENT_LENGTH <= 100000, "TEST_DOCUMENT_LENGTH must be <= 100000");

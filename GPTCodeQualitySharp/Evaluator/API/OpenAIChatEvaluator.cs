@@ -127,7 +127,7 @@ namespace GPTCodeQualitySharp.Evaluator.API
             {
                 // Cache the response
                 _valueStore.StoreValue(ValueStoreTable.OpenAIResponses, cacheKey, response);
-                var evaluator = new OpenAIResultEvaluator(codeChunk, prompt, response);
+                var evaluator = new JSONResultEvaluator(codeChunk, prompt, response);
 
                 EvaluatorResult result;
                 evaluator.TryGetJSONString(out result);
