@@ -15,7 +15,7 @@ namespace GPTCodeQualitySharpTests
 
         // Make sure code chunks are sane
         [TestMethod]
-        public async void SanityCheck()
+        public void SanityCheck()
         {
             string exampleDocument = GetExampleDocument();
             Assert.IsTrue(exampleDocument.Length == TEST_DOCUMENT_LENGTH, "GetExampleDocument() returned document of incorrect length from SanityCheck()"); // Sanity check - if it fails then you did something wrong
@@ -65,7 +65,7 @@ namespace GPTCodeQualitySharpTests
         
         }
 
-        internal static string GetExampleDocument()
+        public static string GetExampleDocument()
         {
             // Note: 10 <= Length <= 100000
             Assert.IsTrue(TEST_DOCUMENT_LENGTH <= 100000, "TEST_DOCUMENT_LENGTH must be <= 100000");
