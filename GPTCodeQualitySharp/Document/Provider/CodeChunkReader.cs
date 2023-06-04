@@ -133,16 +133,20 @@ namespace GPTCodeQualitySharp.Document.Provider
                         if(backtrackLines > 0)
                         {
                             // Calculate the new start line
-                            int newStartLine = codeChunkEndLineNumber - backtrackLines;
+                            int newStartLine = codeChunkStartLineNumber - backtrackLines;
                             // If we have already backtracked to this line, then we need to move the start line up
-                            while(backtrackedToLines.Contains(newStartLine))
+                            if (backtrackedToLines.Contains(newStartLine))
                             {
-                                newStartLine++;
+                                // We can't backtrack to the same line previously, so skip it
                             }
-                            // Add the new start line to the list of backtracked lines
-                            backtrackedToLines.Add(newStartLine);
-                            // Update the start line
-                            codeChunkStartLineNumber = newStartLine;
+                            else
+                            {
+                                // Add the new start line to the list of backtracked lines
+                                backtrackedToLines.Add(newStartLine);
+                                // Update the start line
+                                codeChunkStartLineNumber = newStartLine;
+                                i = codeChunkStartLineNumber - 1; // -1 because we will increment i at the end of the loop
+                            }
                         }
                     }
                 }

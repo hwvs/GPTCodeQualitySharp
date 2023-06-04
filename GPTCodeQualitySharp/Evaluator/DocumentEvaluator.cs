@@ -29,10 +29,10 @@ namespace GPTCodeQualitySharp.Evaluator
             foreach (CodeChunkInfo codeChunkInfo in codeChunkReader)
             {
                 EvaluatorResult result;
-                string cacheResult;
+                string? cacheResult;
 
                 // Cache hit
-                if (_valueStore.TryGetValue(ValueStoreTable.ApiResult, codeChunkInfo.CodeChunk, out cacheResult)) {
+                if (_valueStore.TryGetValue(ValueStoreTable.ApiResult, codeChunkInfo.CodeChunk, out cacheResult) && cacheResult != null) { // TODO: Make this robust
                     result = new EvaluatorResult( true, cacheResult);
                 }
                 else
