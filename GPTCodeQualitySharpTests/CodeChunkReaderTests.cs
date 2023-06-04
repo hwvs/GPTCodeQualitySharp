@@ -93,18 +93,19 @@ namespace GPTCodeQualitySharpTests
             // ERROR: THIS DOES NOT WORK, 5022 instead of 5000 at the end
             // FIX that does it properly
             int lengthBetweenStartAndMiddle = (TEST_DOCUMENT_LENGTH - lengthOfStartWord - lengthOfMiddleWord - lengthOfEndWord - 3) / 2 - 2;
-            int lengthBetweenMiddleAndEnd = TEST_DOCUMENT_LENGTH - lengthBetweenStartAndMiddle - lengthOfStartWord - lengthOfMiddleWord - lengthOfEndWord - 3 - 7;
+            int lengthBetweenMiddleAndEnd = TEST_DOCUMENT_LENGTH - lengthBetweenStartAndMiddle - lengthOfStartWord - lengthOfMiddleWord - lengthOfEndWord - 3 - 2;
 
 
             StringBuilder sb = new StringBuilder();
+
             sb.AppendLine(TEST_DOCUMENT_START_WORD);
             // Add random words in between
-            sb.AppendLine(string.Join("\n", GetRandomWordLine(lengthBetweenStartAndMiddle)));
+            sb.AppendLine(string.Join("\n", GetRandomWordLinesBlock(lengthBetweenStartAndMiddle)));
             sb.AppendLine(TEST_DOCUMENT_MIDDLE_WORD);
             // Add random words in between
-            sb.AppendLine(string.Join("\n", GetRandomWordLine(lengthBetweenMiddleAndEnd)));
+            sb.AppendLine(string.Join("\n", GetRandomWordLinesBlock(lengthBetweenMiddleAndEnd)));
             sb.AppendLine(TEST_DOCUMENT_END_WORD);
-            return sb.ToString();
+            return sb.ToString().ReplaceLineEndings("\n");
 
         }
 
@@ -114,7 +115,7 @@ namespace GPTCodeQualitySharpTests
         /// </summary>
         /// <param name="totalLength"></param>
         /// <returns></returns>
-        private static string GetRandomWordLine(int totalLength, string randomWord = "aaa")
+        private static string GetRandomWordLinesBlock(int totalLength, string randomWord = "aaa")
         {
             int lengthOfWord = randomWord.Length;
             // account for newline for each line,
