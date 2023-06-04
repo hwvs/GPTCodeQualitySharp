@@ -34,7 +34,7 @@ namespace GPTCodeQualitySharp.Evaluator.API.Impl
                 foreach (var kvp in obj.Cast<KeyValuePair<string, JToken>>().ToList())
                 {
 
-                    if (kvp.Key.StartsWith("s") && kvp.Key.Contains("_"))
+                    if (kvp.Key.StartsWith("s") && kvp.Key.Contains('_'))
                     {
                         total_score += kvp.Value.Value<double>();
                         max_score += 10;

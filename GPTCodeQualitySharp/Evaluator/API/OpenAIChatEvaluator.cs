@@ -61,7 +61,7 @@ namespace GPTCodeQualitySharp.Evaluator.API
 
             // Cache hit
             // TODO: If temperature == 0 only
-            if(_valueStore.TryGetValue(ValueStoreTable.ApiResult, cacheKey, out string cacheResult))
+            if (_valueStore.TryGetValue(ValueStoreTable.ApiResult, cacheKey, out string cacheResult))
             {
                 return new EvaluatorResult(true, cacheResult);
             }
@@ -125,14 +125,13 @@ namespace GPTCodeQualitySharp.Evaluator.API
 
             if(response != null)
             {
-                // Cache the response
-                _valueStore.StoreValue(ValueStoreTable.OpenAIResponses, cacheKey, response);
-                var evaluator = new JSONResultEvaluator(codeChunk, prompt, response);
-
-                EvaluatorResult result;
-                evaluator.TryGetJSONString(out result);
-
-                return result;
+                return EvaluatorResultFromJSONResponse(
+                    valueStore: in _valueStore, 
+                    cacheKey: cacheKey, 
+                    codeChunk: codeChunk, 
+                    prompt: prompt, 
+                    response: response
+                    );
             }
             else
             {
@@ -140,6 +139,23 @@ namespace GPTCodeQualitySharp.Evaluator.API
             }
 
 
+        }
+
+        internal static EvaluatorResult EvaluatorResultFromJSONResponse(in IValueStore valueStore, HashableDataset? cacheKey, CodeChunk codeChunk, string prompt, string response) //TODO: Refactor this, public because of the Mock class
+        {
+
+            // Cache the response
+            if (valueStore != null && cacheKey != null)
+            {
+                valueStore!.StoreValue(ValueStoreTable.OpenAIResponses, cacheKey!, response);
+            }
+
+            var evaluator = new JSONResultEvaluator(codeChunk, prompt, response);
+
+            EvaluatorResult result;
+            evaluator.TryGetJSONString(out result);
+
+            return result;
         }
     }
 }

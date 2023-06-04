@@ -63,9 +63,9 @@ namespace GPTCodeQualitySharpTests
                 Assert.IsTrue(evaluated.Result.Success, "Evaluation Result.Success is false, failed");
 
                 Assert.IsTrue(evaluated.Result.JSONResult.Length > 0, "Evaluation Result.JSONResult is empty");
-                Assert.IsTrue(evaluated.Result.JSONResult.Length > 0, "Evaluation Result.JSONResult is empty");
                 Assert.IsTrue(evaluated.Result.TryGetScore(out double score), "Evaluation Result.TryGetScore failed");
-                Assert.IsTrue(score > 0, "Evaluation score is less than zero");
+                Assert.IsTrue(score >= 0, "Evaluation score is less than zero");
+                Assert.IsTrue(score <= 100, "Evaluation score is greater than 100%");
 
                 // Specifics in the mock
                 Assert.IsTrue(evaluated.Result.JSONResult.Contains(MockOpenAIChatEvaluator.MOCK_RESULT_CONTAINS), "Evaluation Result.JSONResult does not contain mock needle");

@@ -13,8 +13,8 @@ namespace GPTCodeQualitySharp.Evaluator.API
     {
         public const string MOCK_RESULT_CONTAINS = " |mock result| "; // Something that should be in the result
         const string MOCK_RESULT = // multiline literal
-            MOCK_RESULT_CONTAINS + @"some random stuff that needs to be cut off from the AI trying to be helpful and not following directions !*#!*@*)) ((({
-    ""summaryOfSnippet"": ""Code appears to be a method that takes a prompt and returns a result. It is difficult to determine the context of the code, but it appears to be a part of a larger application. The code is readable and follows language conventions, but there are some minor issues with the code."",
+            @"some random stuff that needs to be cut off from the AI trying to be helpful and not following directions !*#!*@*)) ((({
+    ""summaryOfSnippet"": """+ MOCK_RESULT_CONTAINS + @"Code appears to be a method that takes a prompt and returns a result. It is difficult to determine the context of the code, but it appears to be a part of a larger application. The code is readable and follows language conventions, but there are some minor issues with the code."",
     ""optimizationIdeas"": ""The code could be improved by adding comments to explain the purpose of the code. The method could be refactored to reduce the number of nested if statements. The method could also be refactored to reduce the number of lines of code."",
     ""s1_pub_access"": 10,
     ""s2_one_job"": 8,
@@ -59,7 +59,9 @@ namespace GPTCodeQualitySharp.Evaluator.API
             // TODO: Make this robust
             string prompt = PreparePrompt(codeChunk);
 
-            return new EvaluatorResult(true, MOCK_RESULT);
+            return OpenAIChatEvaluator.EvaluatorResultFromJSONResponse(null, null, codeChunk: codeChunk, prompt: prompt, response: MOCK_RESULT);
         }
+
+        
     }
 }
