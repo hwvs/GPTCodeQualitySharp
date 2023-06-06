@@ -2,7 +2,7 @@
   "profiles": {
     "GPTCodeQualitySharpAnalyzer": {
       "commandName": "Project",
-      "commandLineArgs": "--folder \"C:\\Users\\User\\source\\repos\\GPTCodeQualitySharp\\GPTCodeQualitySharpAnalyzer\""
+      "commandLineArgs": "--folder \"%USERPROFILE%\\source\\repos\\GPTCodeQualitySharp\\GPTCodeQualitySharpAnalyzer\""
     }
   }
 }
