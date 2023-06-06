@@ -54,7 +54,9 @@ namespace GPTCodeQualitySharp.Evaluator.API
             return PromptTemplate.Replace("{CODE}", codeChunk.Code);
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<EvaluatorResult> EvaluateAsync(CodeChunk codeChunk)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             // TODO: Make this robust
             string prompt = PreparePrompt(codeChunk);

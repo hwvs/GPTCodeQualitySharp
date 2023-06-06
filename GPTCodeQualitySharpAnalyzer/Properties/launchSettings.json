@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GPTCodeQualitySharpAnalyzer": {
+      "commandName": "Project",
+      "commandLineArgs": "--folder \"C:\\Users\\User\\source\\repos\\GPTCodeQualitySharp\\GPTCodeQualitySharpAnalyzer\""
+    }
+  }
+}

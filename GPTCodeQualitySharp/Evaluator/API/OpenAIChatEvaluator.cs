@@ -120,8 +120,29 @@ namespace GPTCodeQualitySharp.Evaluator.API
             chat.RequestParameters.Temperature = (double)_temperature;
 
             // Get the response
-
-            var response = await chat.GetResponseFromChatbotAsync();
+            int retries = 0;
+            var retryDelay = TimeSpan.FromSeconds(15); // TODO: Make this configurable
+            string response = null;
+            while (++retries < 3) // TODO: Refactor this
+            {
+                try
+                {
+                    response = await chat.GetResponseFromChatbotAsync()!;
+                    break;
+                }
+                catch (HttpRequestException ex)
+                {
+                    if (ex.InnerException != null && ex.InnerException.Message.Contains("TooManyRequests"))
+                    {
+                        Console.WriteLine($"Too many requests, retrying after {retryDelay.TotalSeconds} seconds");
+                        await Task.Delay(retryDelay);
+                    }
+                    else
+                    {
+                        throw ex; // Re-throw
+                    }
+                }
+            }
 
             if(response != null)
             {
