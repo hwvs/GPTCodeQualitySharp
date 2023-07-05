@@ -7,7 +7,7 @@ using GPTCodeQualitySharp.Evaluator.API.Impl;
 using Newtonsoft.Json.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-
+ 
 namespace GPTCodeQualitySharpAnalyzer
 {
     internal class Program

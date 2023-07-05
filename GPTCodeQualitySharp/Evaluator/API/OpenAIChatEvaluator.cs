@@ -3,6 +3,7 @@ using GPTCodeQualitySharp.Document.Partial;
 using GPTCodeQualitySharp.Evaluator.API.Impl;
 using OpenAI_API;
 using OpenAI_API.Chat;
+using OpenAI_API.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,41 @@ namespace GPTCodeQualitySharp.Evaluator.API
         private string PreparePrompt(CodeChunk codeChunk)
         {
             return PromptTemplate.Replace("{CODE}", codeChunk.Code);
+        }
+
+        // Used by GetBestModelCachedAsync
+        private volatile static Model? cachedModel = null;
+
+        /// <summary>
+        /// Retrieves the best available model from the OpenAI API, caching the result for future use.
+        /// </summary>
+        /// <param name="api">The OpenAI API instance to use for querying models.</param>
+        /// <returns>The best available model, or null if no suitable model is found.</returns>
+        private static async Task<Model?> GetBestModelCachedAsync(OpenAIAPI api)
+        {
+            // Return the cached model if it's already available
+            if (cachedModel != null)
+            {
+                return cachedModel;
+            }
+
+            // Retrieve the list of available models from the API
+            var models = await api.Models.GetModelsAsync();
+
+            // Filter the models to only include GPT-3.5 models that are not large (32k or 16k)
+            var chatModelsNonLarge = models
+                .Where(m => m.ModelID.StartsWith("gpt-3.5-"))
+                .Where(m => !m.ModelID.Contains("32k") && !m.ModelID.Contains("16k"));
+
+            // If there are any suitable models, cache and return the first one
+            if (chatModelsNonLarge.Any())
+            {
+                cachedModel = chatModelsNonLarge.First();
+                return cachedModel;
+            }
+
+            // Return null if no suitable model is found
+            return null;
         }
 
         public async Task<EvaluatorResult> EvaluateAsync(CodeChunk codeChunk)
@@ -92,7 +128,14 @@ namespace GPTCodeQualitySharp.Evaluator.API
 
             OpenAIAPI api = new OpenAIAPI(new APIAuthentication(ApiKey));
 
-            var chat = api.Chat.CreateConversation();
+            ChatRequest chatArgs = new ChatRequest();
+            var chatModel = await GetBestModelCachedAsync(api);
+            if (chatModel != null) {
+                chatArgs.Model = chatModel.ModelID;
+            }
+            var chat = api.Chat.CreateConversation(chatArgs);
+
+
 
             // Add the chat messages to the chat
 
